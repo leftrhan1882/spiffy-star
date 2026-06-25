@@ -1,0 +1,3397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FFC - Fried Food Cafe</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Poppins:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'Geist';
+    src: url('https://assets.vercel.com/raw/upload/v1/fonts/geist/Geist-Regular.woff2') format('woff2');
+    font-weight: 400; font-style: normal;
+  }
+  @font-face {
+    font-family: 'Geist';
+    src: url('https://assets.vercel.com/raw/upload/v1/fonts/geist/Geist-Bold.woff2') format('woff2');
+    font-weight: 700; font-style: normal;
+  }
+  @font-face {
+    font-family: 'Geist';
+    src: url('https://assets.vercel.com/raw/upload/v1/fonts/geist/Geist-Black.woff2') format('woff2');
+    font-weight: 900; font-style: normal;
+  }
+
+  /* ===== REVIEWS SECTION ===== */
+  .reviews-section {
+    background: #0e0000;
+    padding: clamp(50px,6vw,80px) 0;
+    overflow: hidden;
+  }
+  .reviews-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 clamp(16px,4vw,60px);
+  }
+  .reviews-header {
+    text-align: center; margin-bottom: 14px;
+  }
+  .reviews-overall {
+    display: flex; align-items: center; justify-content: center;
+    gap: 24px; flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+  .overall-score {
+    text-align: center;
+  }
+  .overall-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 4.5rem; line-height: 1;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(212,160,23,0.4);
+  }
+  .overall-stars { font-size: 1.4rem; letter-spacing: 3px; color: var(--gold); }
+  .overall-count {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem; letter-spacing: 3px;
+    color: rgba(255,255,255,0.4); text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .platform-scores {
+    display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+  }
+  .platform-score {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 10px 18px;
+  }
+  .platform-score img { width: 24px; height: 24px; object-fit: contain; border-radius: 4px; }
+  .platform-score-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem; letter-spacing: 1px;
+    color: rgba(255,255,255,0.5);
+  }
+  .platform-score-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.4rem; color: var(--gold); letter-spacing: 1px;
+  }
+  /* Scrolling reviews track */
+  .reviews-track-wrap {
+    position: relative;
+    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  }
+  .reviews-track {
+    display: flex; gap: 16px;
+    animation: scrollReviews 32s linear infinite;
+    width: max-content;
+  }
+  .reviews-track:hover { animation-play-state: paused; }
+  @keyframes scrollReviews {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .review-card {
+    background: linear-gradient(145deg, #1e0505, #130000);
+    border: 1px solid rgba(204,0,0,0.2);
+    border-radius: 10px;
+    padding: 22px 24px;
+    width: 300px; flex-shrink: 0;
+    transition: border-color 0.3s;
+  }
+  .review-card:hover { border-color: var(--gold); }
+  .review-top {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 12px;
+  }
+  .reviewer-info { display: flex; align-items: center; gap: 10px; }
+  .reviewer-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--red);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', cursive; font-size: 1.1rem;
+    color: white; flex-shrink: 0;
+  }
+  .reviewer-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem; letter-spacing: 1px; color: white;
+  }
+  .reviewer-date {
+    font-size: 0.7rem; color: rgba(255,255,255,0.35);
+    margin-top: 2px;
+  }
+  .review-platform img {
+    width: 22px; height: 22px; object-fit: contain; border-radius: 3px; opacity: 0.8;
+  }
+  .review-stars { color: var(--gold); font-size: 0.85rem; letter-spacing: 2px; margin-bottom: 10px; }
+  .review-text {
+    font-size: 0.82rem; color: rgba(255,255,255,0.65);
+    line-height: 1.6; font-style: italic;
+  }
+  .review-item-tag {
+    display: inline-block; margin-top: 10px;
+    background: rgba(204,0,0,0.15);
+    border: 1px solid rgba(204,0,0,0.3);
+    border-radius: 20px; padding: 3px 10px;
+    font-size: 0.7rem; letter-spacing: 1px;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Oswald', sans-serif;
+  }
+
+
+  /* ===== REVIEW FORM ===== */
+  .review-form-wrap {
+    margin-top: 50px;
+    background: linear-gradient(145deg, #1e0505, #130000);
+    border: 1px solid rgba(204,0,0,0.25);
+    border-radius: 12px;
+    padding: clamp(24px, 4vw, 40px);
+    max-width: 600px;
+    margin-left: auto; margin-right: auto;
+  }
+  .review-form-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.8rem; letter-spacing: 4px;
+    margin-bottom: 6px; color: white;
+  }
+  .review-form-sub {
+    font-size: 0.8rem; color: rgba(255,255,255,0.4);
+    letter-spacing: 1px; margin-bottom: 24px;
+  }
+  .form-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-bottom: 14px;
+  }
+  @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.72rem; letter-spacing: 2px;
+    color: rgba(255,255,255,0.5); text-transform: uppercase;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(204,0,0,0.3);
+    border-radius: 6px;
+    padding: 11px 14px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    width: 100%;
+    -webkit-appearance: none;
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: rgba(255,255,255,0.2); }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--red);
+    background: rgba(204,0,0,0.08);
+  }
+  .form-group select option { background: #1a0000; color: white; }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  /* Star rating picker */
+  .star-picker { display: flex; gap: 6px; margin-top: 2px; }
+  .star-picker span {
+    font-size: 1.6rem; cursor: pointer;
+    color: rgba(255,255,255,0.2);
+    transition: color 0.15s, transform 0.15s;
+    line-height: 1;
+  }
+  .star-picker span.active,
+  .star-picker span:hover { color: var(--gold); transform: scale(1.2); }
+  /* Submit button */
+  .review-submit-btn {
+    width: 100%; margin-top: 18px;
+    background: var(--red); color: white;
+    border: none; border-radius: 6px;
+    padding: 14px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem; letter-spacing: 3px;
+    text-transform: uppercase; cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 4px 16px rgba(204,0,0,0.35);
+  }
+  .review-submit-btn:hover { background: #e00000; transform: translateY(-2px); }
+  .review-submit-btn:disabled { background: #555; cursor: not-allowed; transform: none; }
+  /* Success message */
+  .review-success {
+    display: none; text-align: center; padding: 30px 20px;
+  }
+  .review-success .tick { font-size: 3rem; margin-bottom: 12px; }
+  .review-success h3 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.8rem; letter-spacing: 3px; color: #00cc55;
+  }
+  .review-success p { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-top: 6px; }
+
+</style>
+<style>
+  :root {
+    --red: #CC0000;
+    --dark-red: #990000;
+    --gold: #F5A623;
+    --cream: #FFF5E1;
+    --dark: #111111;
+    --dark2: #1a1a1a;
+    --white: #ffffff;
+    --accent: #F5A623;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #111111;
+    color: var(--white);
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* NAVBAR */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    background: rgba(20,0,0,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--red);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 20px;
+    flex-wrap: wrap; gap: 0;
+  }
+  .nav-search-icon {
+    background: none; border: none;
+    color: white; font-size: 1.2rem;
+    cursor: pointer; padding: 4px 8px;
+    display: flex; align-items: center;
+  }
+  /* Expanding search bar in navbar */
+  .nav-search-bar {
+    width: 100%;
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    border-top: 0px solid rgba(204,0,0,0.3);
+  }
+  .nav-search-bar.open {
+    max-height: 60px;
+    padding: 8px 0 10px;
+    border-top: 1px solid rgba(204,0,0,0.3);
+  }
+  .nav-search-inner {
+    position: relative; display: flex; align-items: center;
+  }
+  .nav-search-input {
+    width: 100%; background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(204,0,0,0.5);
+    border-radius: 8px;
+    padding: 10px 42px 10px 40px;
+    color: white; font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem; outline: none;
+    -webkit-appearance: none;
+  }
+  .nav-search-input::placeholder { color: rgba(255,255,255,0.3); }
+  .nav-search-input:focus { border-color: var(--red); }
+  .nav-si { position: absolute; left: 13px; font-size: 1rem; pointer-events: none; }
+  .nav-sc {
+    position: absolute; right: 10px;
+    background: rgba(255,255,255,0.1); border: none;
+    color: white; width: 24px; height: 24px;
+    border-radius: 50%; font-size: 0.75rem; cursor: pointer;
+    display: none; align-items: center; justify-content: center;
+  }
+  .nav-sc.visible { display: flex; }
+  .logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2.4rem;
+    color: #ffffff;
+    letter-spacing: 4px;
+    text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 30px rgba(255,255,255,0.5), 0 0 60px rgba(255,255,255,0.2);
+  }
+  .logo span { color: #ffffff; text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 30px rgba(255,255,255,0.5); }
+  .nav-links { display: flex; gap: 30px; list-style: none; }
+  .nav-links a {
+    color: var(--white); text-decoration: none;
+    font-family: 'Oswald', sans-serif; font-size: 0.9rem;
+    letter-spacing: 2px; text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background:
+      linear-gradient(to bottom, rgba(10,0,0,0.78) 0%, rgba(160,0,0,0.45) 50%, rgba(10,0,0,0.85) 100%),
+      url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1600&h=900&fit=crop&auto=format') center/cover no-repeat;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; text-align: center;
+    position: relative; overflow: hidden;
+    padding-top: 100px;
+    padding-bottom: 40px;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(150,0,0,0.4) 100%);
+    pointer-events: none; z-index: 0;
+  }
+  .checkered-top {
+    position: absolute; top: 68px; left: 0; right: 0; height: 5px;
+    background: repeating-linear-gradient(90deg,
+      #CC0000 0, #CC0000 16px,
+      #D4A017 16px, #D4A017 32px);
+    opacity: 1; z-index: 3;
+  }
+  .hero-badge {
+    position: absolute; top: 88px; right: 0;
+    background: var(--gold); color: #111;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.78rem; letter-spacing: 3px;
+    padding: 8px 28px 8px 20px; text-transform: uppercase;
+    clip-path: polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%);
+    animation: fadeDown 0.6s ease; z-index: 4;
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(3.2rem, 14vw, 9rem);
+    line-height: 0.9; letter-spacing: 4px;
+    font-weight: 400; color: #ffffff;
+    text-shadow: 3px 3px 0px rgba(150,0,0,0.7), 0 0 50px rgba(255,60,60,0.2);
+    animation: fadeUp 0.8s ease 0.2s both;
+    z-index: 2; position: relative;
+  }
+  .hero h1 .ffc {
+    font-family: 'Bebas Neue', cursive;
+    color: var(--gold);
+    text-shadow: 2px 2px 0px rgba(120,70,0,0.5), 0 0 30px rgba(212,160,23,0.6);
+    display: block; letter-spacing: 20px;
+    font-size: 0.5em; margin-bottom: 6px;
+  }
+  .hero-sub {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem; letter-spacing: 6px;
+    color: rgba(255,255,255,0.65); text-transform: uppercase;
+    margin-top: 16px;
+    animation: fadeUp 0.8s ease 0.4s both;
+    z-index: 2; position: relative;
+  }
+  .hero-tagline {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem; color: rgba(255,220,150,0.8);
+    margin: 14px 0 34px; font-style: italic;
+    animation: fadeUp 0.8s ease 0.5s both;
+    z-index: 2; position: relative;
+  }
+  .hero-btns {
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.8s ease 0.6s both;
+    z-index: 2; position: relative;
+  }
+  .btn-primary {
+    background: var(--gold); color: #111;
+    font-family: 'Oswald', sans-serif; font-size: 1rem;
+    letter-spacing: 4px; text-transform: uppercase;
+    padding: 14px 38px; border: none; cursor: pointer;
+    border-radius: 3px;
+    box-shadow: 0 4px 20px rgba(212,160,23,0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(212,160,23,0.7); }
+  .btn-outline {
+    background: transparent;
+    font-family: 'Oswald', sans-serif; font-size: 1rem;
+    letter-spacing: 4px; text-transform: uppercase;
+    padding: 12px 38px; border: 2px solid var(--gold);
+    border-radius: 3px; cursor: pointer;
+    transition: all 0.2s; text-decoration: none;
+    display: inline-block; color: var(--gold);
+  }
+  .btn-outline:hover { background: var(--gold); color: #111; }
+  .scroll-indicator {
+    position: absolute; bottom: 28px;
+    font-family: 'Oswald', sans-serif; font-size: 0.72rem;
+    letter-spacing: 3px; color: rgba(255,255,255,0.3);
+    animation: bounce 2s infinite; z-index: 2;
+  }
+
+  /* FRIDAY OFFER BANNER */
+  .offer-banner {
+    background: var(--gold);
+    color: var(--dark);
+    padding: 18px;
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    overflow: hidden;
+  }
+  .offer-banner .ticker {
+    display: inline-block;
+    animation: ticker 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  /* SECTIONS */
+  section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    letter-spacing: 5px;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .section-title span { color: var(--red); }
+  .section-line {
+    height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--gold), transparent);
+    width: 200px; margin-bottom: 50px;
+  }
+
+  /* SPECIAL OFFER */
+  .special-offer-section {
+    background: linear-gradient(135deg, #2a0000, #1a0000);
+    padding: 80px 0;
+  }
+  .special-offer-inner { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px,4vw,60px); }
+  .offer-card {
+    background: var(--red);
+    border-radius: 4px;
+    padding: 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .offer-card::before {
+    content: 'FRIDAY';
+    position: absolute; right: -20px; top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 8rem; color: rgba(255,255,255,0.06);
+    letter-spacing: 10px;
+  }
+  .offer-card h2 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.2rem; letter-spacing: 5px;
+    color: var(--gold); margin-bottom: 10px;
+  }
+  .offer-card h3 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(3rem, 7vw, 5rem);
+    line-height: 0.95; margin-bottom: 20px;
+  }
+  .offer-price {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 5rem; color: var(--gold);
+    line-height: 1;
+  }
+  .offer-price small {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem; color: rgba(255,255,255,0.7);
+    display: block;
+  }
+  .offer-note {
+    font-size: 0.85rem; color: rgba(255,255,255,0.6);
+    letter-spacing: 1px; margin-top: 10px;
+  }
+
+  /* MENU GRID */
+  .menu-categories {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .cat-btn {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem; letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 22px; border: 2px solid rgba(255,255,255,0.2);
+    background: transparent; color: rgba(255,255,255,0.6);
+    cursor: pointer; transition: all 0.2s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+  .cat-btn.active, .cat-btn:hover {
+    background: var(--red); color: var(--white);
+    border-color: var(--red);
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .menu-card {
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    display: none;
+    min-height: 200px;
+  }
+  /* Big emoji illustration in corner */
+  .card-emoji {
+    position: absolute;
+    top: 50%; right: -10px;
+    transform: translateY(-60%);
+    font-size: 5.5rem;
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 0;
+    line-height: 1;
+    filter: saturate(0.8);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .menu-card:hover .card-emoji {
+    opacity: 0.32;
+    transform: translateY(-60%) scale(1.1) rotate(-8deg);
+  }
+  .menu-card.active { display: flex; flex-direction: column; }
+  .menu-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--red);
+    box-shadow: 0 15px 40px rgba(204,0,0,0.35);
+  }
+
+  /* Dark gradient overlay so text is readable */
+  .card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(10,0,0,0.96) 0%,
+      rgba(10,0,0,0.75) 45%,
+      rgba(10,0,0,0.30) 100%
+    );
+    z-index: 1;
+    border-radius: 8px;
+  }
+  .card-body {
+    padding: 14px 16px 16px;
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    z-index: 2;
+  }
+  .price-cart-row {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 8px;
+    margin-top: 6px;
+  }
+  /* hide old img tags — background handles it */
+  .card-img-wrap { display: none; }
+  .menu-card .badge {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--gold); color: var(--dark);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.62rem; letter-spacing: 2px;
+    padding: 3px 10px; text-transform: uppercase;
+    z-index: 3;
+    border-radius: 2px;
+  }
+  .menu-card .badge.new { background: #00aa44; color: white; }
+  .menu-card .badge.premium { background: var(--gold); }
+  .menu-card .badge.oos { background: #444; color: #aaa; font-size: 0.58rem; }
+  .menu-card h4 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem; letter-spacing: 1px;
+    margin-bottom: 5px; padding-right: 70px;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  }
+  .menu-card p {
+    font-size: 0.78rem; color: rgba(255,255,255,0.6);
+    line-height: 1.5; margin-bottom: 12px; flex: 1;
+  }
+  .menu-card .price {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.9rem; color: var(--gold);
+    letter-spacing: 2px;
+  }
+  .menu-card .price span {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.75rem; color: rgba(255,255,255,0.4);
+  }
+  /* Out of stock overlay */
+  .oos-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 6px; z-index: 5;
+    backdrop-filter: blur(1px);
+  }
+  .oos-overlay .oos-label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.4rem; letter-spacing: 4px;
+    color: #ff4444;
+    border: 2px solid #ff4444;
+    padding: 4px 18px;
+    border-radius: 2px;
+    background: rgba(0,0,0,0.5);
+  }
+  .oos-overlay .oos-sub {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.72rem; letter-spacing: 2px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+  }
+  .menu-card.out-of-stock .price { color: rgba(212,160,23,0.35); }
+  .menu-card.out-of-stock h4 { color: rgba(255,255,255,0.4); }
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--red), transparent);
+    margin: 12px 0;
+  }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--red);
+    padding: 60px 0;
+    text-align: center;
+  }
+  .contact-inner { max-width: 800px; margin: 0 auto; padding: 0 40px; }
+  .contact-inner h2 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 3rem; letter-spacing: 5px;
+    margin-bottom: 30px;
+  }
+  .contact-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px; margin-top: 40px;
+  }
+  .contact-item h4 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem; letter-spacing: 3px;
+    color: rgba(255,255,255,0.6); margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .contact-item p {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem; letter-spacing: 2px;
+  }
+  .phone-numbers {
+    display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .phone-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2.2rem; letter-spacing: 4px;
+    color: var(--gold);
+  }
+  .delivery-badge {
+    display: inline-block;
+    background: rgba(0,0,0,0.3);
+    padding: 10px 24px; border-radius: 2px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem; letter-spacing: 3px;
+    margin-top: 20px;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--dark);
+    border-top: 2px solid var(--red);
+    padding: 30px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 20px;
+  }
+  footer .logo { font-size: 1.8rem; }
+  footer p { color: rgba(255,255,255,0.4); font-size: 0.8rem; }
+  .social-links { display: flex; gap: 15px; }
+  .social-links a {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem; letter-spacing: 2px;
+    transition: color 0.3s;
+  }
+  .social-links a:hover { color: var(--gold); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+  @keyframes ticker {
+    0% { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* MOBILE */
+  /* =====================
+     RESPONSIVE — DESKTOP
+     ===================== */
+  @media (min-width: 1024px) {
+    nav { padding: 14px 60px; }
+    .nav-links { display: flex !important; }
+    .nav-search-icon { font-size: 1.1rem; }
+    .hero h1 { font-size: 8rem; }
+    .menu-grid { grid-template-columns: repeat(4, 1fr); }
+    .offer-card { padding: 50px 60px; }
+    .hours-section { padding: 80px 60px; }
+    .hours-inner { max-width: 600px; }
+    .cart-drawer { max-width: 480px; left: 50%; transform: translateX(-50%) translateY(100%); right: auto; border-radius: 16px 16px 0 0; }
+    .cart-drawer.open { transform: translateX(-50%) translateY(0); }
+    .wa-btn { width: 66px; height: 66px; font-size: 2rem; }
+    .cart-fab { width: 66px; height: 66px; font-size: 1.8rem; }
+    .order-platforms { gap: 24px; }
+    .platform-btn { min-width: 220px; padding: 16px 36px; }
+    .map-wrap iframe { height: 400px; }
+  }
+
+  /* =====================
+     RESPONSIVE — TABLET
+     ===================== */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    nav { padding: 12px 30px; }
+    .nav-links { display: none; }
+    .menu-grid { grid-template-columns: repeat(3, 1fr); }
+    .offer-card { padding: 40px 40px; }
+    .hero h1 { font-size: 6rem; }
+    .hours-inner { max-width: 520px; }
+  }
+
+  /* =====================
+     RESPONSIVE — MOBILE
+     ===================== */
+  @media (max-width: 767px) {
+    /* Navbar */
+    nav { padding: 10px 16px; }
+    .nav-links { display: none; }
+    .logo { font-size: 2rem; }
+
+    /* Hero */
+    .hero { padding-left: 16px !important; padding-right: 16px !important; }
+    .hero h1 { font-size: clamp(3.5rem, 18vw, 5.5rem); }
+    .hero p { font-size: 0.85rem; }
+
+    /* Menu section */
+    #menu > section { padding: 0 16px !important; }
+    #menu { padding: 50px 0 !important; }
+    .menu-grid { grid-template-columns: 1fr; gap: 16px; }
+    .menu-card { min-height: 180px; }
+    .section-title { font-size: clamp(2rem, 10vw, 3rem); }
+
+    /* Category buttons — scroll horizontally */
+    .menu-categories {
+      display: flex; flex-wrap: nowrap;
+      overflow-x: auto; gap: 8px;
+      padding-bottom: 10px; margin-bottom: 20px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .menu-categories::-webkit-scrollbar { display: none; }
+    .cat-btn { 
+      white-space: nowrap; flex-shrink: 0;
+      padding: 7px 14px; font-size: 0.75rem;
+    }
+
+    /* Search */
+    .search-input { font-size: 0.85rem; padding: 11px 40px 11px 38px; }
+
+    /* Cards */
+    .card-body { padding: 12px 14px 14px; }
+    .menu-card h4 { font-size: 1rem; }
+    .menu-card p { font-size: 0.72rem; }
+    .menu-card .price { font-size: 1.5rem; }
+    .price-cart-row { gap: 6px; }
+    .atc-add { font-size: 0.65rem; padding: 0 8px; letter-spacing: 1px; }
+
+    /* Offers */
+    .offer-card { 
+      grid-template-columns: 1fr !important; 
+      padding: 24px 16px; gap: 16px;
+    }
+    .special-offer-inner > div[style*="grid-template-columns:1fr 1fr"],
+    .special-offer-inner > div[style*="grid-template-columns:repeat"] {
+      grid-template-columns: 1fr !important;
+    }
+    .offer-price { font-size: 3.5rem; }
+
+    /* Hours */
+    .hours-section { padding: 50px 20px; }
+    .hours-card { padding: 30px 20px 28px; }
+
+    /* Contact */
+    #contact > div { padding: 50px 20px !important; }
+    .contact-grid { grid-template-columns: 1fr !important; gap: 16px; }
+    .order-platforms { flex-direction: column; align-items: stretch; }
+    .platform-btn { min-width: unset; justify-content: center; }
+    .map-wrap iframe { height: 250px; }
+
+    /* Footer */
+    footer { 
+      flex-direction: column; text-align: center; 
+      gap: 12px; padding: 30px 20px;
+    }
+    .social-links { justify-content: center; }
+
+    /* Cart drawer */
+    .cart-drawer { border-radius: 18px 18px 0 0; }
+    .cart-item-name { font-size: 0.85rem; }
+
+    /* FABs — avoid overlap on small screens */
+    .wa-btn { bottom: 20px; right: 16px; width: 54px; height: 54px; font-size: 1.5rem; }
+    .cart-fab { bottom: 20px; left: 16px; width: 54px; height: 54px; font-size: 1.4rem; }
+    .cart-count-badge { width: 20px; height: 20px; font-size: 0.75rem; }
+  }
+
+  /* Very small phones */
+  @media (max-width: 380px) {
+    .hero h1 { font-size: 3rem; }
+    .menu-grid { grid-template-columns: 1fr; }
+    .cat-btn { padding: 6px 10px; font-size: 0.7rem; }
+    nav { padding: 8px 12px; }
+  }
+
+  /* WHATSAPP BUTTON */
+  .wa-btn {
+    position: fixed; bottom: 28px; right: 28px; z-index: 999;
+    background: #25D366; color: white;
+    width: 60px; height: 60px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; font-size: 1.8rem;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.5);
+    animation: waPulse 2s infinite;
+    transition: transform 0.2s;
+  }
+  .wa-btn:hover { transform: scale(1.1); }
+  @keyframes waPulse {
+    0%,100% { box-shadow: 0 4px 20px rgba(37,211,102,0.5); }
+    50% { box-shadow: 0 4px 35px rgba(37,211,102,0.85); }
+  }
+
+  /* OPENING HOURS */
+  .hours-section {
+    background: #0f0f0f;
+    padding: 70px 40px;
+    text-align: center;
+  }
+  .hours-inner { max-width: 560px; margin: 0 auto; }
+  .hours-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(2.8rem, 7vw, 4rem);
+    letter-spacing: 6px;
+    margin-bottom: 36px;
+    color: var(--white);
+    animation: fadeUp 0.7s ease both;
+  }
+  .hours-title span { color: var(--red); }
+
+  /* Card */
+  .hours-card {
+    background: linear-gradient(145deg, #1e0505, #130000);
+    border: 1px solid rgba(180,0,0,0.25);
+    border-radius: 10px;
+    padding: 40px 36px 36px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.8s ease 0.15s both;
+  }
+  .hours-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(204,0,0,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Animated clock */
+  .clock-wrap {
+    width: 54px; height: 54px;
+    margin: 0 auto 24px;
+    position: relative;
+  }
+  .clock-face {
+    width: 54px; height: 54px; border-radius: 50%;
+    background: #2e1010;
+    border: 2px solid rgba(204,0,0,0.4);
+    position: relative;
+    box-shadow: 0 0 16px rgba(204,0,0,0.2);
+  }
+  .clock-center {
+    position: absolute; top: 50%; left: 50%;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red);
+    transform: translate(-50%,-50%);
+    z-index: 3;
+  }
+  .hand {
+    position: absolute;
+    bottom: 50%; left: 50%;
+    transform-origin: bottom center;
+    border-radius: 3px;
+  }
+  .hour-hand {
+    width: 3px; height: 14px;
+    background: var(--white);
+    margin-left: -1.5px;
+    animation: rotateHour 43200s linear infinite;
+  }
+  .min-hand {
+    width: 2px; height: 19px;
+    background: var(--red);
+    margin-left: -1px;
+    animation: rotateMin 3600s linear infinite;
+  }
+  .sec-hand {
+    width: 1px; height: 22px;
+    background: #ff6600;
+    margin-left: -0.5px;
+    animation: none;
+    z-index: 2;
+  }
+  @keyframes rotateHour { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes rotateMin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .hours-time {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(2rem, 6vw, 2.8rem);
+    letter-spacing: 4px;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .hours-days {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem; letter-spacing: 4px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  /* Status badge — pill shape like screenshot */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem; letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 9px 26px;
+    border-radius: 50px;
+    transition: all 0.4s ease;
+  }
+  .status-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    display: inline-block; flex-shrink: 0;
+  }
+  .status-open {
+    background: rgba(0,180,60,0.12);
+    border: 1.5px solid #00b43c;
+    color: #00e64d;
+  }
+  .status-open .status-dot {
+    background: #00e64d;
+    box-shadow: 0 0 6px #00e64d;
+    animation: dotPulse 1.4s ease-in-out infinite;
+  }
+  .status-closed {
+    background: rgba(204,0,0,0.12);
+    border: 1.5px solid var(--red);
+    color: #ff5555;
+  }
+  .status-closed .status-dot {
+    background: #ff4444;
+    box-shadow: 0 0 6px #ff4444;
+  }
+  @keyframes dotPulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* ORDER ONLINE PLATFORMS */
+  .order-online-section {
+    margin-top: 40px;
+    text-align: center;
+  }
+  .order-online-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.6rem; letter-spacing: 5px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .order-platforms {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .platform-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem; letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: transform 0.25s, box-shadow 0.25s;
+    min-width: 200px; justify-content: center;
+  }
+  .platform-btn:hover { transform: translateY(-4px); }
+  .platform-btn img { width: 32px; height: 32px; object-fit: contain; border-radius: 6px; }
+  .platform-zomato {
+    background: linear-gradient(135deg, #1a0000, #2d0000);
+    border: 1.5px solid #e23744;
+    color: #ff6b76;
+    box-shadow: 0 4px 20px rgba(226,55,68,0.2);
+  }
+  .platform-zomato:hover { box-shadow: 0 8px 30px rgba(226,55,68,0.4); }
+  .platform-swiggy {
+    background: linear-gradient(135deg, #1a0a00, #2d1500);
+    border: 1.5px solid #fc8019;
+    color: #ffa04d;
+    box-shadow: 0 4px 20px rgba(252,128,25,0.2);
+  }
+  .platform-swiggy:hover { box-shadow: 0 8px 30px rgba(252,128,25,0.4); }
+  .platform-label { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+  .platform-label small { font-size: 0.65rem; letter-spacing: 1px; opacity: 0.6; font-family: 'Poppins', sans-serif; text-transform: uppercase; }
+  .platform-label strong { font-size: 1.05rem; letter-spacing: 2px; }
+
+  /* GOOGLE MAP */
+  .map-wrap {
+    width: 100%; border-radius: 4px; overflow: hidden;
+    border: 1px solid rgba(204,0,0,0.3);
+    margin-top: 30px;
+  }
+  .map-wrap iframe { width: 100%; height: 300px; border: 0; display: block; }
+
+
+  /* ===== CART SYSTEM ===== */
+
+  /* Add to Cart button on each card */
+  .add-to-cart-btn {
+    display: flex; align-items: center;
+    background: rgba(204,0,0,0.15);
+    border: 1px solid rgba(204,0,0,0.4);
+    border-radius: 6px;
+    overflow: hidden;
+    height: 34px;
+    flex-shrink: 0;
+  }
+  .atc-add {
+    background: none; border: none;
+    color: var(--white); font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem; letter-spacing: 1.5px;
+    cursor: pointer; padding: 0 10px;
+    transition: background 0.2s;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .atc-add:hover { background: rgba(204,0,0,0.35); }
+  .atc-controls { display: none; }
+  .atc-controls.visible { display: flex; align-items: center; }
+  .atc-btn {
+    width: 30px; height: 34px; flex-shrink: 0;
+    background: rgba(204,0,0,0.3); border: none;
+    color: white; font-size: 1rem; cursor: pointer;
+    transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .atc-btn:hover { background: var(--red); }
+  .atc-count {
+    padding: 0 8px; text-align: center;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1rem; letter-spacing: 1px; color: var(--gold);
+  }
+
+  /* Cart FAB */
+  .cart-fab {
+    position: fixed; bottom: 28px; left: 28px; z-index: 998;
+    background: var(--red); color: white;
+    width: 60px; height: 60px; border-radius: 50%;
+    display: none; align-items: center; justify-content: center;
+    font-size: 1.6rem; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(204,0,0,0.5);
+    border: none;
+    animation: cartBounce 0.4s ease;
+    transition: transform 0.2s;
+  }
+  .cart-fab:hover { transform: scale(1.1); }
+  .cart-fab.visible { display: flex; }
+  @keyframes cartBounce {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .cart-count-badge {
+    position: absolute; top: -4px; right: -4px;
+    background: var(--gold); color: var(--dark);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 0.85rem; min-width: 22px; height: 22px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    letter-spacing: 1px;
+  }
+
+  /* Cart Drawer */
+  .cart-drawer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #141414;
+    border-top: 2px solid var(--red);
+    border-radius: 20px 20px 0 0;
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    max-height: 80vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 -10px 40px rgba(204,0,0,0.3);
+  }
+  .cart-drawer.open { transform: translateY(0); }
+  .cart-drawer-handle {
+    width: 40px; height: 4px; background: rgba(255,255,255,0.2);
+    border-radius: 2px; margin: 12px auto 0;
+    flex-shrink: 0;
+  }
+  .cart-drawer-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid rgba(204,0,0,0.2);
+    flex-shrink: 0;
+  }
+  .cart-drawer-header h3 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.6rem; letter-spacing: 3px; color: var(--white);
+  }
+  .cart-close-btn {
+    background: rgba(255,255,255,0.1); border: none;
+    color: white; width: 32px; height: 32px; border-radius: 50%;
+    font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .cart-items-list {
+    overflow-y: auto; flex: 1;
+    padding: 12px 16px;
+  }
+  .cart-item-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .cart-item-name {
+    flex: 1;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.95rem; letter-spacing: 1px;
+  }
+  .cart-item-qty {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .cart-item-qty button {
+    background: rgba(204,0,0,0.2); border: 1px solid rgba(204,0,0,0.4);
+    color: white; width: 26px; height: 26px; border-radius: 4px;
+    cursor: pointer; font-size: 1rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cart-item-qty button:hover { background: var(--red); }
+  .cart-item-qty span {
+    font-family: 'Bebas Neue', cursive; font-size: 1.1rem;
+    color: var(--gold); min-width: 20px; text-align: center;
+  }
+  .cart-item-price {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.1rem; color: var(--gold); letter-spacing: 1px;
+    min-width: 55px; text-align: right;
+  }
+  .cart-empty-msg {
+    text-align: center; padding: 40px 20px;
+    color: rgba(255,255,255,0.3);
+    font-family: 'Oswald', sans-serif; letter-spacing: 2px;
+    font-size: 0.9rem;
+  }
+  .cart-footer {
+    padding: 14px 16px 20px;
+    border-top: 1px solid rgba(204,0,0,0.2);
+    flex-shrink: 0;
+  }
+  .cart-total-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .cart-total-label {
+    font-family: 'Oswald', sans-serif; letter-spacing: 3px;
+    font-size: 0.9rem; color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+  }
+  .cart-total-amount {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2rem; color: var(--gold); letter-spacing: 2px;
+  }
+  .cart-wp-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 16px;
+    background: #25D366; color: white; border: none;
+    border-radius: 10px; cursor: pointer;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.3rem; letter-spacing: 3px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 4px 16px rgba(37,211,102,0.3);
+  }
+  .cart-wp-btn:hover { background: #1ebe5d; transform: translateY(-2px); }
+  .cart-wp-btn svg { flex-shrink: 0; }
+
+  /* Cart backdrop */
+  .cart-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    z-index: 999; display: none;
+  }
+  .cart-backdrop.visible { display: block; }
+
+  /* SEARCH BAR */
+  .search-wrap {
+    margin: 0 0 28px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .search-input {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 2px solid rgba(204,0,0,0.5);
+    border-radius: 10px;
+    padding: 14px 50px 14px 48px;
+    color: var(--white);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-appearance: none;
+  }
+  .search-input::placeholder {
+    color: rgba(255,255,255,0.3);
+    font-size: 0.85rem;
+  }
+  .search-input:focus {
+    border-color: var(--red);
+    background: rgba(204,0,0,0.1);
+  }
+  .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem; pointer-events: none;
+    z-index: 1;
+  }
+  .search-clear {
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.1); border: none;
+    color: white; width: 26px; height: 26px;
+    border-radius: 50%; font-size: 0.8rem; cursor: pointer;
+    display: none; align-items: center; justify-content: center;
+    z-index: 1;
+  }
+  .search-clear.visible { display: flex; }
+  .no-results {
+    text-align: center; padding: 60px 20px;
+    color: rgba(255,255,255,0.3);
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 3px; font-size: 1rem;
+    display: none;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo">F<span>F</span>C</div>
+  <div style="display:flex;align-items:center;gap:4px;">
+    <ul class="nav-links">
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#offers">Offers</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#contact" style="color:var(--gold)">Order Now</a></li>
+    </ul>
+    <button class="nav-search-icon" onclick="toggleNavSearch()" title="Search menu">🔍</button>
+  </div>
+  <div class="nav-search-bar" id="navSearchBar">
+    <div class="nav-search-inner">
+      <span class="nav-si">🔍</span>
+      <input class="nav-search-input" id="navSearchInput" type="text"
+        placeholder="Search menu items..."
+        oninput="searchMenu(this)"
+        autocomplete="off">
+      <button class="nav-sc" id="navSearchClear" onclick="clearNavSearch()">✕</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="max-width:100%; padding-left:clamp(16px,5vw,60px); padding-right:clamp(16px,5vw,60px);">
+  <div class="checkered-top"></div>
+  <div class="hero-badge">🔥 Delhi's Crunchiest — Since Day One</div>
+  <h1>
+    <span class="ffc">FFC</span>
+    FRIED FOOD<br>CAFE
+  </h1>
+  <p class="hero-sub">Turkman Gate, Delhi 110006</p>
+  <p class="hero-tagline">"It's time to change..." &nbsp;·&nbsp; #FeelTheCrunch</p>
+  <div class="hero-btns">
+    <a href="#menu" class="btn-primary">View Menu</a>
+    <a href="#contact" class="btn-outline">Order Now</a>
+  </div>
+  <div class="scroll-indicator">▼ &nbsp; SCROLL DOWN</div>
+</section>
+
+<!-- TICKER BANNER -->
+<div class="offer-banner">
+  <span class="ticker">
+    🍗 FAMOUS FRIDAY OFFER — Full Broasted Chicken @ ₹450 &nbsp;&nbsp;•&nbsp;&nbsp; 
+    🍔 Crispy Decker @ ₹160 &nbsp;&nbsp;•&nbsp;&nbsp; 
+    🔥 Wings 4 Pcs @ ₹130 | 6 Pcs @ ₹180 &nbsp;&nbsp;•&nbsp;&nbsp;
+    🌶️ Korean Wings @ ₹200 &nbsp;&nbsp;•&nbsp;&nbsp;
+    🆓 FREE HOME DELIVERY (MIN ₹500, UP TO 2 KM) &nbsp;&nbsp;•&nbsp;&nbsp; 
+    🍽️ ORDER ON ZOMATO &amp; SWIGGY &nbsp;&nbsp;•&nbsp;&nbsp;
+    📞 9015647013 &nbsp;|&nbsp; 8130706760 &nbsp;&nbsp;•&nbsp;&nbsp;
+    🍗 FAMOUS FRIDAY OFFER — Full Broasted Chicken @ ₹450 &nbsp;&nbsp;•&nbsp;&nbsp; 
+    🍔 Crispy Decker @ ₹160 &nbsp;&nbsp;•&nbsp;&nbsp;
+  </span>
+</div>
+
+<!-- FRIDAY OFFER -->
+<div class="special-offer-section" id="offers">
+  <div class="special-offer-inner">
+    <div class="section-title" style="text-align:center; margin-bottom:40px;">
+      FAMOUS <span style="color: var(--gold); text-shadow: 0 0 20px rgba(212,160,23,0.6);">FRIDAY</span>
+    </div>
+    <div class="offer-card">
+      <div>
+        <h2>⭐ Every Friday Special</h2>
+        <h3>FULL CRUNCHY<br>BROASTED<br>CHICKEN</h3>
+        <p style="color:rgba(255,255,255,0.6); font-size:0.85rem;">With Bone · Crispy & Juicy · 2 Pcs ₹150 | 4 Pcs ₹280 | 8 Pcs ₹550</p>
+      </div>
+      <div style="text-align:right;">
+        <div class="offer-price">
+          <small>Only</small>
+          ₹450
+        </div>
+        <p class="offer-note">Special Offer Every Friday · 8 Pcs With Bone</p>
+        <br>
+        <a href="#contact" class="btn-primary" style="font-size:0.85rem; padding:12px 28px;">Order Now →</a>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:16px;">
+      <div style="background:linear-gradient(135deg,#2a0a0a,#1a0000); border:1px solid rgba(204,0,0,0.3); padding:30px; border-radius:4px;">
+        <div style="font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:3px; color:var(--gold); margin-bottom:8px; text-transform:uppercase;">No.1 Signature</div>
+        <div style="font-family:'Bebas Neue',cursive; font-size:2.5rem; letter-spacing:3px;">CRISPY DECKER</div>
+        <div style="font-family:'Bebas Neue',cursive; font-size:3rem; color:var(--gold);">₹160</div>
+        <p style="font-size:0.8rem; color:rgba(255,255,255,0.5);">Our signature double-decker crispy burger</p>
+      </div>
+      <div style="background:linear-gradient(135deg,#1a2a0a,#0a1a00); border:1px solid rgba(0,170,68,0.3); padding:30px; border-radius:4px;">
+        <div style="font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:3px; color:#00cc55; margin-bottom:8px; text-transform:uppercase;">🔥 Crunch Mein Mazaa Hai!</div>
+        <div style="font-family:'Bebas Neue',cursive; font-size:2.5rem; letter-spacing:3px;">WING'SSSSS</div>
+        <div style="display:flex; gap:20px; align-items:baseline; margin:8px 0;">
+          <span style="font-family:'Bebas Neue',cursive; font-size:1.3rem; color:rgba(255,255,255,0.6);">4 PCS</span>
+          <span style="font-family:'Bebas Neue',cursive; font-size:2.2rem; color:#00cc55;">₹130</span>
+        </div>
+        <div style="display:flex; gap:20px; align-items:baseline;">
+          <span style="font-family:'Bebas Neue',cursive; font-size:1.3rem; color:rgba(255,255,255,0.6);">6 PCS</span>
+          <span style="font-family:'Bebas Neue',cursive; font-size:2.2rem; color:#00cc55;">₹180</span>
+        </div>
+        <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-top:8px;">🌶️ Korean Wings ₹200</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MENU -->
+<div style="background:#151515; padding:clamp(40px,6vw,80px) 0;" id="menu">
+  <section style="max-width:1200px; margin:0 auto; padding:0 clamp(16px,4vw,60px);">
+    <div class="section-title">OUR <span>MENU</span></div>
+    <div class="section-line"></div>
+
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input 
+        class="search-input" 
+        id="menuSearch"
+        type="text" 
+        placeholder="Search items... (e.g. chicken, fries)" 
+        oninput="searchMenu(this)"
+        autocomplete="off"
+      >
+      <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+    </div>
+
+    <div class="menu-categories">
+      <button class="cat-btn active" onclick="filterMenu('all')">All Items</button>
+      <button class="cat-btn" onclick="filterMenu('chicken')">🍗 Chicken</button>
+      <button class="cat-btn" onclick="filterMenu('veg')">🥗 Veg</button>
+      <button class="cat-btn" onclick="filterMenu('fish')">🐟 Fish</button>
+      <button class="cat-btn" onclick="filterMenu('fries')">🍟 Fries</button>
+      <button class="cat-btn" onclick="filterMenu('roll')">🌯 Roll & Wrap</button>
+      <button class="cat-btn" onclick="filterMenu('special')">⭐ Special</button>
+      <button class="cat-btn" onclick="filterMenu('broasted')">🍗 Broasted</button>
+    </div>
+    <div class="no-results" id="noResults">😕 No items found</div>
+
+    <div class="menu-grid" id="menuGrid">
+
+      <!-- CHICKEN -->
+      <div class="menu-card active" data-cat="chicken" style="background:linear-gradient(145deg,#1a0a00,#3d1500);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍔</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=220&fit=crop" alt="Chicken Burger" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">Must Try</div>
+          <h4>Chicken Burger</h4>
+          <p>Classic crunchy chicken patty in a soft bun</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹120</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="120">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="chicken" style="background-image:url(https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=600&h=400&fit=crop)">
+        <div class="card-overlay"></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=400&h=220&fit=crop" alt="CH. Hot &amp; Spicy" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">Hot 🌶️</div>
+          <h4>CH. Hot &amp; Spicy</h4>
+          <p>Spicy crunchy chicken with bold masala</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹120</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="120">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="chicken" style="background:linear-gradient(145deg,#1a0500,#3d1000);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍗</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=400&h=220&fit=crop" alt="Chicken Tandoori" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">Must Try</div>
+          <h4>Chicken Tandoori</h4>
+          <p>Tandoori-marinated crunchy chicken burger</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹130</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="130">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="chicken" style="background:linear-gradient(145deg,#1a1000,#3d2800);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🧀</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=400&h=220&fit=crop" alt="Chicken Cheese" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Chicken Cheese</h4>
+          <p>Loaded with melted cheese and crispy chicken</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹130</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="130">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="chicken" style="background:linear-gradient(145deg,#0a0a1a,#1a1a3d);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍔</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1596956470007-2bf6095e7e16?w=400&h=220&fit=crop" alt="Bingo FFC" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Bingo FFC</h4>
+          <p>FFC's special bingo-style crunchy burger</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹130</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="130">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="chicken" style="background:linear-gradient(145deg,#1a0a00,#2d1500);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">💪</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=220&fit=crop" alt="Mighty FFC" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">Premium</div>
+          <h4>Mighty FFC</h4>
+          <p>Premium mighty crunchy chicken burger</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹130</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="130">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="chicken" style="background:linear-gradient(145deg,#1a0a00,#3d1a00);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🌮</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=220&fit=crop" alt="Mexican Spicy" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">Premium</div>
+          <h4>Mexican Spicy</h4>
+          <p>Mexican-style spicy chicken with FFC sauce</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹130</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="130">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="chicken" style="background:linear-gradient(145deg,#1a0000,#3d0000);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍗</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1586816001966-79b736744398?w=400&h=220&fit=crop" alt="Double Chicken" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Double Chicken</h4>
+          <p>Double the crunch, double the satisfaction</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹180</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="180">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VEG -->
+      <div class="menu-card active" data-cat="veg" style="background:linear-gradient(145deg,#0a1a0a,#1a3d1a);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🥬</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1520072959219-c595dc870360?w=400&h=220&fit=crop" alt="Crispy Veg" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Crispy Veg</h4>
+          <p>Crispy vegetable patty burger</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹70</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="70">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="veg" style="background-image:url(https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=600&h=400&fit=crop)">
+        <div class="card-overlay"></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=400&h=220&fit=crop" alt="Veg Hot &amp; Spicy" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">Hot 🌶️</div>
+          <h4>Veg Hot &amp; Spicy</h4>
+          <p>Spicy veg burger with hot sauce</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹80</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="80">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="veg" style="background:linear-gradient(145deg,#0a1a0a,#1a3d1a);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🥙</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=220&fit=crop" alt="Bingo Veg" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Bingo Veg</h4>
+          <p>FFC bingo-style veg burger</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹80</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="80">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="veg" style="background:linear-gradient(145deg,#1a1500,#3d3000);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🧀</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=400&h=220&fit=crop" alt="Veg Cheese" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Veg Cheese</h4>
+          <p>Veg patty loaded with cheese</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹80</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="80">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="veg" style="background:linear-gradient(145deg,#1a0a00,#2a1500);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🫛</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=400&h=220&fit=crop" alt="Veg Tandoori" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Veg Tandoori</h4>
+          <p>Tandoori-marinated veg patty burger</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹80</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="80">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="veg" style="background:linear-gradient(145deg,#0a1a0a,#153d15);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">💚</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&h=220&fit=crop" alt="Mighty Veg" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">New</div>
+          <h4>Mighty Veg</h4>
+          <p>Premium mighty veg burger</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹90</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="90">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="veg" style="background:linear-gradient(145deg,#1a1500,#3d3500);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🌮</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=400&h=220&fit=crop" alt="Mexican Veg" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">New</div>
+          <h4>Mexican Veg</h4>
+          <p>Mexican-style spicy veg burger</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹90</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="90">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FISH -->
+      <div class="menu-card active out-of-stock" data-cat="fish" style="background-image:url(https://images.unsplash.com/photo-1485704686097-ed47f7263ca4?w=600&h=400&fit=crop)">
+        <div class="card-overlay"></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1485704686097-ed47f7263ca4?w=400&h=220&fit=crop" alt="Fish Hot &amp; Spicy" loading="lazy">
+
+      <div class="oos-overlay">
+        <div class="oos-label">Out of Stock</div>
+        <div class="oos-sub">Available in winters only</div>
+      </div>        </div>
+        <div class="card-body">
+        <div class="badge oos">Must Try</div>
+          <h4>Fish Hot &amp; Spicy</h4>
+          <p>Lightly spicy crispy fish burger</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹150</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="150">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active out-of-stock" data-cat="fish" style="background:linear-gradient(145deg,#001520,#002a3d);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🐠</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1485704686097-ed47f7263ca4?w=400&h=220&fit=crop" alt="Fish Tandoori" loading="lazy">
+
+      <div class="oos-overlay">
+        <div class="oos-label">Out of Stock</div>
+        <div class="oos-sub">Available in winters only</div>
+      </div>        </div>
+        <div class="card-body">
+        <div class="badge oos">Must Try</div>
+          <h4>Fish Tandoori</h4>
+          <p>Tandoori sauce with a crispy fish patty</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹180</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="180">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active out-of-stock" data-cat="fish" style="background:linear-gradient(145deg,#001a1a,#003d3d);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🎣</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1485704686097-ed47f7263ca4?w=400&h=220&fit=crop" alt="Mighty Fish" loading="lazy">
+
+      <div class="oos-overlay">
+        <div class="oos-label">Out of Stock</div>
+        <div class="oos-sub">Available in winters only</div>
+      </div>        </div>
+        <div class="card-body">
+          <h4>Mighty Fish</h4>
+          <p>Special sauce with a crunchy fish patty</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹200</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="200">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active out-of-stock" data-cat="fish" style="background:linear-gradient(145deg,#001a10,#003d25);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🌮</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1485704686097-ed47f7263ca4?w=400&h=220&fit=crop" alt="Mexican Fish" loading="lazy">
+
+      <div class="oos-overlay">
+        <div class="oos-label">Out of Stock</div>
+        <div class="oos-sub">Available in winters only</div>
+      </div>        </div>
+        <div class="card-body">
+        <div class="badge oos">New</div>
+          <h4>Mexican Fish</h4>
+          <p>Garlic-infused fish with rich creamy flavour</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹220</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="220">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active out-of-stock" data-cat="fish" style="background:linear-gradient(145deg,#001520,#002040);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🐟</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1544982503-9f984c14501a?w=400&h=220&fit=crop" alt="Fish Fillet (4 pcs)" loading="lazy">
+
+      <div class="oos-overlay">
+        <div class="oos-label">Out of Stock</div>
+        <div class="oos-sub">Available in winters only</div>
+      </div>        </div>
+        <div class="card-body">
+        <div class="badge oos">Must Try</div>
+          <h4>Fish Fillet (4 pcs)</h4>
+          <p>Crunchy and soft fish strips with chilli garlic dip</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹300</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="300">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FRIES -->
+      <div class="menu-card active" data-cat="fries" style="background:linear-gradient(145deg,#1a1500,#3d3000);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍟</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1576107232684-1279f390859f?w=400&h=220&fit=crop" alt="Salted Fries" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Salted Fries</h4>
+          <p>Classic crispy salted fries</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹80</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="80">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="fries" style="background:linear-gradient(145deg,#1a0a00,#3d1500);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🌶️</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&h=220&fit=crop" alt="Masala Fries" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Masala Fries</h4>
+          <p>FFC-style spiced masala fries</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹100</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="100">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="fries" style="background:linear-gradient(145deg,#1a1200,#3d2800);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍟</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=400&h=220&fit=crop" alt="Creamy Fries" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Creamy Fries</h4>
+          <p>Crispy fries topped with creamy sauce</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹150</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="150">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="fries" style="background:linear-gradient(145deg,#1a0800,#3d1800);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍕</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1585325701956-60dd9c8553bc?w=400&h=220&fit=crop" alt="Cheese Pizza Fries" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Cheese Pizza Fries</h4>
+          <p>Cheesy pizza-style loaded fries</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹150</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="150">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="fries" style="background:linear-gradient(145deg,#1a0500,#3d0f00);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍕</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1585325701956-60dd9c8553bc?w=400&h=220&fit=crop" alt="Chicken Pizza Fries" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Chicken Pizza Fries</h4>
+          <p>Crispy fries with chicken and pizza sauce</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹170</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="170">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="fries" style="background:linear-gradient(145deg,#1a0500,#3d1000);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍗</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=220&fit=crop" alt="Chicken Fillet (4 pcs)" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Chicken Fillet (4 pcs)</h4>
+          <p>Crispy boneless strips with FFC masala</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹200</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="200">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROLL & WRAP -->
+      <div class="menu-card active" data-cat="roll" style="background:linear-gradient(145deg,#1a0800,#3d1500);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🌯</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=220&fit=crop" alt="Crunchy Chicken Pizza Roll" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">Must Try</div>
+          <h4>Crunchy Chicken Pizza Roll</h4>
+          <p>Crunchy chicken wrapped in a pizza roll</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹180</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="180">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="roll" style="background:linear-gradient(145deg,#0a1500,#1a3000);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🥙</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=400&h=220&fit=crop" alt="Mix Veg Pizza Roll" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Mix Veg Pizza Roll</h4>
+          <p>Mixed vegetables in a crispy pizza roll</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹150</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="150">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="roll" style="background:linear-gradient(145deg,#1a0a00,#3d1a00);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🌯</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=220&fit=crop" alt="Chicken Wrap" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Chicken Wrap</h4>
+          <p>Classic chicken wrapped in a soft tortilla</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹130</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="130">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="roll" style="background-image:url(https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=600&h=400&fit=crop); background-size:cover; background-position:center;">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🌯</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=220&fit=crop" alt="Tandoori Wrap" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Tandoori Wrap</h4>
+          <p>Tandoori chicken wrapped in a soft tortilla</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹150</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="150">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPECIAL -->
+      <div class="menu-card active" data-cat="special" style="background:linear-gradient(145deg,#1a1000,#3d2500);">
+        <div class="card-overlay"></div>
+
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400&h=220&fit=crop" alt="Cheezaa (2 pcs)" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Cheezaa (2 pcs)</h4>
+          <p>Boneless chicken loaded with cream and cheese</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹170</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="170">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="special" style="background:linear-gradient(145deg,#1a1000,#3d2500);">
+        <div class="card-overlay"></div>
+
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400&h=220&fit=crop" alt="Cheezaa (4 pcs)" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Cheezaa (4 pcs)</h4>
+          <p>Boneless chicken loaded with cream and cheese</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹300</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="300">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="special" style="background:linear-gradient(145deg,#1a0a00,#3d1500);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍿</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=400&h=220&fit=crop" alt="Crunchy Pop" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Crunchy Pop</h4>
+          <p>Little bites — perfect crispy snack</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹120</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="120">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="special" style="background:linear-gradient(145deg,#1a0800,#3d1800);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🐔</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=220&fit=crop&q=80" alt="Creamy Chicken Pop" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Creamy Chicken Pop</h4>
+          <p>Crispy pop in a box with cream and FFC special masala</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹150</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="150">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="special" style="background:linear-gradient(145deg,#0a0a1a,#1a1a3d);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍱</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1585325701956-60dd9c8553bc?w=400&h=220&fit=crop" alt="Chicken Cube (10 pcs)" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Chicken Cube (10 pcs)</h4>
+          <p>10-piece crispy chicken nuggets</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹150</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="150">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="special" style="background:linear-gradient(145deg,#1a0000,#3d0010);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🌶️</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1598514982901-71b3b3734cfb?w=400&h=220&fit=crop" alt="Korean Popcorn" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">New</div>
+          <h4>Korean Popcorn</h4>
+          <p>Korean-style crispy popcorn chicken with signature sauce</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹150</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="150">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BROASTED CHICKEN WITH BONE -->
+      <div class="menu-card active" data-cat="broasted" style="background:linear-gradient(145deg,#1a0800,#3d1500);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍗</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1598514982901-71b3b3734cfb?w=400&h=220&fit=crop" alt="Broasted Chicken — 2 Pcs" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">Must Try</div>
+          <h4>Broasted Chicken — 2 Pcs</h4>
+          <p>Bone-in crispy broasted chicken · Middle Eastern flavour · Perfect crunch</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹150</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="150">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="broasted" style="background:linear-gradient(145deg,#1a0800,#3d1500);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍗</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1598514982901-71b3b3734cfb?w=400&h=220&fit=crop" alt="Broasted Chicken — 4 Pcs" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Broasted Chicken — 4 Pcs</h4>
+          <p>Bone-in crispy broasted chicken · Middle Eastern flavour · Perfect crunch</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹280</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="280">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="broasted" style="background:linear-gradient(145deg,#1a0800,#3d1500);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍗</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1598514982901-71b3b3734cfb?w=400&h=220&fit=crop" alt="Broasted Chicken — 8 Pcs" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">Best Value</div>
+          <h4>Broasted Chicken — 8 Pcs</h4>
+          <p>Full bone-in crispy broasted chicken with FFC special masala</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹550</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="550">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="broasted" style="background:linear-gradient(145deg,#1a0500,#3d1000);">
+        <div class="card-overlay"></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400&h=220&fit=crop" alt="Wing'sssss — 4 Pcs" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Wing'sssss — 4 Pcs</h4>
+          <p>Crunchy chicken wings · Crunch mein mazaa hai!</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹130</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="130">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="broasted" style="background:linear-gradient(145deg,#1a0500,#3d1000);">
+        <div class="card-overlay"></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400&h=220&fit=crop" alt="Wing'sssss — 6 Pcs" loading="lazy">
+        </div>
+        <div class="card-body">
+          <h4>Wing'sssss — 6 Pcs</h4>
+          <p>Crunchy chicken wings · Crunch mein mazaa hai!</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹180</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="180">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="broasted" style="background:linear-gradient(145deg,#1a0000,#3d0015);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🌶️</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=400&h=220&fit=crop" alt="Korean Wings" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">New</div>
+          <h4>Korean Wings</h4>
+          <p>Korean-style glazed crispy chicken wings</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹200</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="200">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card active" data-cat="broasted" style="background:linear-gradient(145deg,#1a0a00,#3d1800);">
+        <div class="card-overlay"></div>
+        <div class="card-emoji">🍔</div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=220&fit=crop" alt="Crispy Decker" loading="lazy">
+        </div>
+        <div class="card-body">
+        <div class="badge">No.1 Signature</div>
+          <h4>Crispy Decker</h4>
+          <p>FFC signature double-decker crispy chicken burger</p>
+          <div class="divider"></div>
+          <div class="price-cart-row">
+            <div class="price">₹160</div>
+            <div class="add-to-cart-btn">
+              <button class="atc-add" onclick="addToCart(this, event)" data-price="160">+ Add</button>
+              <div class="atc-controls">
+                <button class="atc-btn" onclick="changeQty(this, -1, event)">−</button>
+                <span class="atc-count">1</span>
+                <button class="atc-btn" onclick="changeQty(this, 1, event)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ADD ONS -->
+    <div style="margin-top:50px; background:linear-gradient(135deg,#2a0a0a,#1a0000); border:1px solid rgba(204,0,0,0.2); padding:30px; border-radius:4px;">
+      <div style="font-family:'Bebas Neue',cursive; font-size:2rem; letter-spacing:4px; margin-bottom:20px;">ADD <span style="color:var(--red)">ONS</span> <span style="font-family:'Oswald',sans-serif; font-size:1rem; color:var(--gold); letter-spacing:3px;">— ALL @ ₹20 each</span></div>
+      <div style="display:flex; flex-wrap:wrap; gap:12px;">
+        <span style="background:rgba(204,0,0,0.2); border:1px solid rgba(204,0,0,0.3); padding:6px 16px; font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:2px; border-radius:2px;">Cheese Slice</span>
+        <span style="background:rgba(204,0,0,0.2); border:1px solid rgba(204,0,0,0.3); padding:6px 16px; font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:2px; border-radius:2px;">Veg Mayyo</span>
+        <span style="background:rgba(204,0,0,0.2); border:1px solid rgba(204,0,0,0.3); padding:6px 16px; font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:2px; border-radius:2px;">Chilli Garlic</span>
+        <span style="background:rgba(204,0,0,0.2); border:1px solid rgba(204,0,0,0.3); padding:6px 16px; font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:2px; border-radius:2px;">Cheesy Dip 🆕</span>
+        <span style="background:rgba(204,0,0,0.2); border:1px solid rgba(204,0,0,0.3); padding:6px 16px; font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:2px; border-radius:2px;">Tandoori Dip</span>
+        <span style="background:rgba(204,0,0,0.2); border:1px solid rgba(204,0,0,0.3); padding:6px 16px; font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:2px; border-radius:2px;">Mighty Sauce</span>
+        <span style="background:rgba(204,0,0,0.2); border:1px solid rgba(204,0,0,0.3); padding:6px 16px; font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:2px; border-radius:2px;">Garlic Mexican 🆕</span>
+        <span style="background:rgba(204,0,0,0.2); border:1px solid rgba(204,0,0,0.3); padding:6px 16px; font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:2px; border-radius:2px;">Garlic Mayyo 🆕</span>
+        <span style="background:rgba(204,0,0,0.2); border:1px solid rgba(204,0,0,0.3); padding:6px 16px; font-family:'Oswald',sans-serif; font-size:0.85rem; letter-spacing:2px; border-radius:2px;">Extra Masala 🆕</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+
+<!-- REVIEWS SECTION -->
+<div class="reviews-section">
+  <div class="reviews-inner">
+    <div class="reviews-header">
+      <div class="section-title">CUSTOMER <span>REVIEWS</span></div>
+      <div class="section-line"></div>
+    </div>
+
+    <!-- Overall Rating -->
+    <div class="reviews-overall">
+      <div class="overall-score">
+        <div class="overall-num">4.5</div>
+        <div class="overall-stars">★★★★½</div>
+        <div class="overall-count">500+ Reviews</div>
+      </div>
+      <div class="platform-scores">
+        <div class="platform-score">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google">
+          <div>
+            <div class="platform-score-name">Google</div>
+            <div class="platform-score-num">4.4 ★</div>
+          </div>
+        </div>
+        <div class="platform-score">
+          <img src="https://b.zmtcdn.com/web_assets/b40b97e677bc7b2ca77c58c61db266fe1603954218.png" alt="Zomato">
+          <div>
+            <div class="platform-score-name">Zomato</div>
+            <div class="platform-score-num">4.5 ★</div>
+          </div>
+        </div>
+        <div class="platform-score">
+          <img src="https://upload.wikimedia.org/wikipedia/en/1/12/Swiggy_logo.svg" alt="Swiggy">
+          <div>
+            <div class="platform-score-name">Swiggy</div>
+            <div class="platform-score-num">4.3 ★</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auto-scrolling Review Cards -->
+    <div class="reviews-track-wrap">
+      <div class="reviews-track" id="reviewsTrack">
+
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar">AR</div>
+              <div>
+                <div class="reviewer-name">Aryan R.</div>
+                <div class="reviewer-date">2 weeks ago · Google</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="G"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Best fried chicken in Old Delhi! The broasted chicken is absolutely crispy and juicy. Been coming here every Friday for the special offer."</div>
+          <span class="review-item-tag">🍗 Broasted Chicken</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#e23744;">ZM</div>
+              <div>
+                <div class="reviewer-name">Zara M.</div>
+                <div class="reviewer-date">1 month ago · Zomato</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://b.zmtcdn.com/web_assets/b40b97e677bc7b2ca77c58c61db266fe1603954218.png" alt="Z"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Crispy Decker is a must try! The double decker burger is insane. Delivery was super fast and food was still hot. Will order again!"</div>
+          <span class="review-item-tag">🍔 Crispy Decker</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#fc8019;">SK</div>
+              <div>
+                <div class="reviewer-name">Sahil K.</div>
+                <div class="reviewer-date">3 weeks ago · Swiggy</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://upload.wikimedia.org/wikipedia/en/1/12/Swiggy_logo.svg" alt="S"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Wings are absolutely fire! 🔥 The Korean wings are something else. FFC is the best fast food place near Turkman Gate. Highly recommend!"</div>
+          <span class="review-item-tag">🍖 Korean Wings</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#6a1fc2;">PR</div>
+              <div>
+                <div class="reviewer-name">Priya R.</div>
+                <div class="reviewer-date">1 week ago · Google</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="G"></div>
+          </div>
+          <div class="review-stars">★★★★½</div>
+          <div class="review-text">"Ordered the Cheezaa and Masala Fries — both were amazing! The portion size is generous and the price is very reasonable. Love this place!"</div>
+          <span class="review-item-tag">🧀 Cheezaa</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#cc6600;">MH</div>
+              <div>
+                <div class="reviewer-name">Mohammad H.</div>
+                <div class="reviewer-date">2 months ago · Zomato</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://b.zmtcdn.com/web_assets/b40b97e677bc7b2ca77c58c61db266fe1603954218.png" alt="Z"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Crunchy Chicken Pizza Roll is my go-to order every time. The taste is unique, never had anything like this in Delhi. FFC rocks! 🤩"</div>
+          <span class="review-item-tag">🌯 Chicken Pizza Roll</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#007a4d;">NJ</div>
+              <div>
+                <div class="reviewer-name">Neha J.</div>
+                <div class="reviewer-date">5 days ago · Swiggy</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://upload.wikimedia.org/wikipedia/en/1/12/Swiggy_logo.svg" alt="S"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Even the veg options are delicious! Tried the Mexican Veg and it blew my mind. The spice level is perfect. Definitely visiting again soon."</div>
+          <span class="review-item-tag">🌮 Mexican Veg</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#990000;">RK</div>
+              <div>
+                <div class="reviewer-name">Rahul K.</div>
+                <div class="reviewer-date">3 days ago · Google</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="G"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Famous Friday offer is unbeatable value! Full broasted chicken for ₹450 is insane. Quality and taste is consistently great every time."</div>
+          <span class="review-item-tag">🍗 Famous Friday</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#1a1a6e;">AS</div>
+              <div>
+                <div class="reviewer-name">Aisha S.</div>
+                <div class="reviewer-date">2 weeks ago · Zomato</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://b.zmtcdn.com/web_assets/b40b97e677bc7b2ca77c58c61db266fe1603954218.png" alt="Z"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Creamy Chicken Pop is so addictive! The FFC special masala is their secret weapon. Old Delhi ka sabse best fast food. Must visit! 👌"</div>
+          <span class="review-item-tag">🐔 Creamy Chicken Pop</span>
+        </div>
+
+        <!-- Duplicate for seamless loop -->
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar">AR</div>
+              <div>
+                <div class="reviewer-name">Aryan R.</div>
+                <div class="reviewer-date">2 weeks ago · Google</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="G"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Best fried chicken in Old Delhi! The broasted chicken is absolutely crispy and juicy. Been coming here every Friday for the special offer."</div>
+          <span class="review-item-tag">🍗 Broasted Chicken</span>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#e23744;">ZM</div>
+              <div>
+                <div class="reviewer-name">Zara M.</div>
+                <div class="reviewer-date">1 month ago · Zomato</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://b.zmtcdn.com/web_assets/b40b97e677bc7b2ca77c58c61db266fe1603954218.png" alt="Z"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Crispy Decker is a must try! The double decker burger is insane. Delivery was super fast and food was still hot. Will order again!"</div>
+          <span class="review-item-tag">🍔 Crispy Decker</span>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#fc8019;">SK</div>
+              <div>
+                <div class="reviewer-name">Sahil K.</div>
+                <div class="reviewer-date">3 weeks ago · Swiggy</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://upload.wikimedia.org/wikipedia/en/1/12/Swiggy_logo.svg" alt="S"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Wings are absolutely fire! 🔥 The Korean wings are something else. FFC is the best fast food place near Turkman Gate. Highly recommend!"</div>
+          <span class="review-item-tag">🍖 Korean Wings</span>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#6a1fc2;">PR</div>
+              <div>
+                <div class="reviewer-name">Priya R.</div>
+                <div class="reviewer-date">1 week ago · Google</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="G"></div>
+          </div>
+          <div class="review-stars">★★★★½</div>
+          <div class="review-text">"Ordered the Cheezaa and Masala Fries — both were amazing! The portion size is generous and the price is very reasonable. Love this place!"</div>
+          <span class="review-item-tag">🧀 Cheezaa</span>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#cc6600;">MH</div>
+              <div>
+                <div class="reviewer-name">Mohammad H.</div>
+                <div class="reviewer-date">2 months ago · Zomato</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://b.zmtcdn.com/web_assets/b40b97e677bc7b2ca77c58c61db266fe1603954218.png" alt="Z"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Crunchy Chicken Pizza Roll is my go-to order every time. The taste is unique, never had anything like this in Delhi. FFC rocks! 🤩"</div>
+          <span class="review-item-tag">🌯 Chicken Pizza Roll</span>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#007a4d;">NJ</div>
+              <div>
+                <div class="reviewer-name">Neha J.</div>
+                <div class="reviewer-date">5 days ago · Swiggy</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://upload.wikimedia.org/wikipedia/en/1/12/Swiggy_logo.svg" alt="S"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Even the veg options are delicious! Tried the Mexican Veg and it blew my mind. The spice level is perfect. Definitely visiting again soon."</div>
+          <span class="review-item-tag">🌮 Mexican Veg</span>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#990000;">RK</div>
+              <div>
+                <div class="reviewer-name">Rahul K.</div>
+                <div class="reviewer-date">3 days ago · Google</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="G"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Famous Friday offer is unbeatable value! Full broasted chicken for ₹450 is insane. Quality and taste is consistently great every time."</div>
+          <span class="review-item-tag">🍗 Famous Friday</span>
+        </div>
+        <div class="review-card">
+          <div class="review-top">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:#1a1a6e;">AS</div>
+              <div>
+                <div class="reviewer-name">Aisha S.</div>
+                <div class="reviewer-date">2 weeks ago · Zomato</div>
+              </div>
+            </div>
+            <div class="review-platform"><img src="https://b.zmtcdn.com/web_assets/b40b97e677bc7b2ca77c58c61db266fe1603954218.png" alt="Z"></div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">"Creamy Chicken Pop is so addictive! The FFC special masala is their secret weapon. Old Delhi ka sabse best fast food. Must visit! 👌"</div>
+          <span class="review-item-tag">🐔 Creamy Chicken Pop</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- REVIEW FORM -->
+    <div class="review-form-wrap" id="reviewFormWrap">
+      <div id="reviewFormContent">
+        <div class="review-form-title">✍️ Leave a Review</div>
+        <div class="review-form-sub">Share your experience with FFC — it helps us grow!</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Your Name *</label>
+            <input type="text" id="rf-name" placeholder="e.g. Aryan Khan" maxlength="40">
+          </div>
+          <div class="form-group">
+            <label>Platform</label>
+            <select id="rf-platform">
+              <option value="Google">🔍 Google</option>
+              <option value="Zomato">🍽️ Zomato</option>
+              <option value="Swiggy">🛵 Swiggy</option>
+              <option value="Visit">🏪 Visited In-Store</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Item You Tried</label>
+          <input type="text" id="rf-item" placeholder="e.g. Broasted Chicken, Wings..." maxlength="50">
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Your Rating *</label>
+          <div class="star-picker" id="starPicker">
+            <span data-val="1">★</span>
+            <span data-val="2">★</span>
+            <span data-val="3">★</span>
+            <span data-val="4">★</span>
+            <span data-val="5">★</span>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:6px;">
+          <label>Your Review *</label>
+          <textarea id="rf-review" placeholder="Tell us about your experience! What did you love? 😊" maxlength="300"></textarea>
+        </div>
+
+        <div style="font-size:0.7rem; color:rgba(255,255,255,0.25); margin-bottom:4px; text-align:right;" id="rf-charcount">0 / 300</div>
+
+        <button class="review-submit-btn" onclick="submitReview()">Submit Review 🔥</button>
+      </div>
+
+      <!-- Success State -->
+      <div class="review-success" id="reviewSuccess">
+        <div class="tick">✅</div>
+        <h3>Shukriya!</h3>
+        <p>Your review has been added. Thanks for the love! ❤️</p>
+        <button onclick="resetReviewForm()" style="margin-top:16px; background:none; border:1px solid rgba(255,255,255,0.2); color:rgba(255,255,255,0.5); padding:8px 20px; border-radius:20px; cursor:pointer; font-size:0.8rem; letter-spacing:2px;">Write Another</button>
+      </div>
+    </div>
+
+<!-- OPENING HOURS -->
+<div class="hours-section">
+  <div class="hours-inner">
+    <div class="hours-title">OPENING <span>HOURS</span></div>
+    <div class="hours-card">
+      <!-- Animated Clock -->
+      <div class="clock-wrap">
+        <div class="clock-face">
+          <div class="hand hour-hand" id="hourHand"></div>
+          <div class="hand min-hand" id="minHand"></div>
+          <div class="hand sec-hand" id="secHand"></div>
+          <div class="clock-center"></div>
+        </div>
+      </div>
+      <div class="hours-time">4:30 PM &ndash; 12:30 AM</div>
+      <div class="hours-days">Open All Days</div>
+      <div id="statusBadge" class="status-badge status-closed">
+        <span class="status-dot"></span>
+        <span id="statusText">Checking...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="contact-section" id="contact">
+  <div class="contact-inner">
+    <h2>ORDER NOW</h2>
+    <p style="color:rgba(255,255,255,0.8); letter-spacing:2px; font-family:'Oswald',sans-serif;">Call us for home delivery!</p>
+    <div class="phone-numbers">
+      <a href="tel:9015647013" class="phone-num">9015647013</a>
+      <span style="font-family:'Bebas Neue',cursive; font-size:2.2rem; color:rgba(255,255,255,0.4);">|</span>
+      <a href="tel:8130706760" class="phone-num" style="text-decoration:none;">8130706760</a>
+    </div>
+    <div class="delivery-badge">🛵 FREE DELIVERY · MIN ₹500 · UP TO 2 KM</div>
+    <div class="contact-grid" style="margin-top:40px;">
+      <div class="contact-item">
+        <h4>📍 Address</h4>
+        <p>1861, Near Noor Biryani,<br>Main Road Turkman Gate,<br>Delhi 110006</p>
+      </div>
+      <div class="contact-item">
+        <h4>💳 Payment</h4>
+        <p>Cash · Paytm · UPI</p>
+      </div>
+      <div class="contact-item">
+        <h4>📱 Follow Us</h4>
+        <p>@ffcindian_</p>
+      </div>
+    </div>
+
+    <!-- ORDER ONLINE -->
+    <div class="order-online-section">
+      <div class="order-online-title">Order Online</div>
+      <div class="order-platforms">
+        <a href="https://zomato.onelink.me/xqzv/m18dpj3c" target="_blank" rel="noopener" class="platform-btn platform-zomato">
+          <img src="https://b.zmtcdn.com/web_assets/b40b97e677bc7b2ca77c58c61db266fe1603954218.png" alt="Zomato">
+          <div class="platform-label">
+            <small>Order on</small>
+            <strong>Zomato</strong>
+          </div>
+        </a>
+        <a href="https://www.swiggy.com/city/delhi/ffc-fried-food-cafe-old-delhi-rest1159254" target="_blank" rel="noopener" class="platform-btn platform-swiggy">
+          <img src="https://upload.wikimedia.org/wikipedia/en/1/12/Swiggy_logo.svg" alt="Swiggy">
+          <div class="platform-label">
+            <small>Order on</small>
+            <strong>Swiggy</strong>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- GOOGLE MAP -->
+    <div class="map-wrap" style="margin-top:40px;">
+      <iframe
+        src="https://maps.google.com/maps?q=1861+Near+Noor+Biryani+Main+Road+Turkman+Gate+Delhi+110006&t=&z=16&ie=UTF8&iwloc=&output=embed"
+        allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">F<span>F</span>C</div>
+  <p>© 2024 Fried Food Cafe · Delhi · #FeelTheCrunch</p>
+  <div class="social-links">
+    <a href="#">Instagram</a>
+    <a href="#">Facebook</a>
+    <a href="#">YouTube</a>
+  </div>
+</footer>
+
+<script>
+  function filterMenu(cat) {
+    const cards = document.querySelectorAll('.menu-card');
+    const btns = document.querySelectorAll('.cat-btn');
+
+    btns.forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    cards.forEach(card => {
+      if (cat === 'all' || card.dataset.cat === cat) {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    });
+  }
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // Scroll animations
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.menu-card, .offer-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+
+  // Opening Hours Live Status (4:30 PM - 12:30 AM IST)
+  function checkOpenStatus() {
+    const now = new Date();
+    const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+    const h = ist.getHours();
+    const m = ist.getMinutes();
+    const total = h * 60 + m;
+    const openMin = 16 * 60 + 30;  // 4:30 PM
+    const isOpen = total >= openMin || total <= 30; // open 4:30pm – 12:30am
+    const badge = document.getElementById('statusBadge');
+    const statusText = document.getElementById('statusText');
+    if (!badge || !statusText) return;
+    if (isOpen) {
+      badge.className = 'status-badge status-open';
+      statusText.textContent = 'Open Now';
+    } else {
+      let minsLeft = openMin - total;
+      if (minsLeft < 0) minsLeft += 24 * 60;
+      const hrs = Math.floor(minsLeft / 60);
+      const mins = minsLeft % 60;
+      badge.className = 'status-badge status-closed';
+      statusText.textContent = hrs > 0
+        ? 'Closed · Opens in ' + hrs + 'h ' + mins + 'm'
+        : 'Closed · Opens in ' + mins + ' min';
+    }
+
+    // Sync hour + minute hands
+    const hourHand = document.getElementById('hourHand');
+    const minHand  = document.getElementById('minHand');
+    if (hourHand && minHand) {
+      const hourDeg = (h % 12) * 30 + m * 0.5;
+      const minDeg  = m * 6;
+      hourHand.style.animation = 'none';
+      minHand.style.animation  = 'none';
+      hourHand.style.transform = 'rotate(' + hourDeg + 'deg)';
+      minHand.style.transform  = 'rotate(' + minDeg  + 'deg)';
+    }
+  }
+
+  // Second hand — ticks every second
+  function tickSecond() {
+    const now = new Date();
+    const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+    const s = ist.getSeconds();
+    const secHand = document.getElementById('secHand');
+    if (secHand) {
+      secHand.style.transform = 'rotate(' + (s * 6) + 'deg)';
+    }
+  }
+
+  checkOpenStatus();
+  tickSecond();
+  setInterval(checkOpenStatus, 30000);
+  setInterval(tickSecond, 1000);
+
+
+  // ===== CART SYSTEM =====
+  const cart = {};
+
+  function addToCart(btn, e) {
+    e.stopPropagation();
+    const cardBody = btn.closest('.card-body');
+    const h4 = cardBody.querySelector('h4');
+    if (!h4) return;
+    const name  = h4.innerText.trim();
+    const price = parseInt(btn.dataset.price || btn.closest('.add-to-cart-btn').querySelector('[data-price]').dataset.price || 0);
+    btn.style.display = 'none';
+    const controls = btn.closest('.add-to-cart-btn').querySelector('.atc-controls');
+    controls.classList.add('visible');
+    if (!cart[name]) cart[name] = { qty: 1, price };
+    else cart[name].qty++;
+    controls.querySelector('.atc-count').textContent = cart[name].qty;
+    updateCart();
+  }
+
+  function changeQty(btn, delta, e) {
+    e.stopPropagation();
+    const cardBody = btn.closest('.card-body');
+    const h4 = cardBody.querySelector('h4');
+    if (!h4) return;
+    const name  = h4.innerText.trim();
+    const atcWrap = btn.closest('.add-to-cart-btn');
+    const addBtn = atcWrap.querySelector('.atc-add');
+    const price = parseInt(addBtn.dataset.price || 0);
+    if (!cart[name]) cart[name] = { qty: 0, price };
+    cart[name].qty += delta;
+    if (cart[name].qty <= 0) {
+      delete cart[name];
+      atcWrap.querySelector('.atc-controls').classList.remove('visible');
+      addBtn.style.display = '';
+    } else {
+      atcWrap.querySelector('.atc-count').textContent = cart[name].qty;
+    }
+    updateCart();
+  }
+
+  function updateCart() {
+    const keys = Object.keys(cart);
+    const totalQty = keys.reduce(function(s,k){ return s + cart[k].qty; }, 0);
+    const totalAmt = keys.reduce(function(s,k){ return s + cart[k].qty * cart[k].price; }, 0);
+
+    var fab = document.getElementById('cartFab');
+    fab.classList.toggle('visible', totalQty > 0);
+    document.getElementById('cartBadge').textContent = totalQty;
+    document.getElementById('cartTotal').textContent = '\u20b9' + totalAmt;
+
+    var list = document.getElementById('cartItemsList');
+    var emptyMsg = document.getElementById('cartEmptyMsg');
+    list.querySelectorAll('.cart-item-row').forEach(function(r){ r.remove(); });
+
+    if (keys.length === 0) {
+      emptyMsg.style.display = '';
+    } else {
+      emptyMsg.style.display = 'none';
+      keys.forEach(function(name) {
+        var qty   = cart[name].qty;
+        var price = cart[name].price;
+        var row = document.createElement('div');
+        row.className = 'cart-item-row';
+        row.innerHTML =
+          '<span class="cart-item-name">' + name + '</span>' +
+          '<div class="cart-item-qty">' +
+            '<button onclick="drawerQty(\'' + name.replace(/'/g,"\\'") + '\',-1)">&#8722;</button>' +
+            '<span>' + qty + '</span>' +
+            '<button onclick="drawerQty(\'' + name.replace(/'/g,"\\'") + '\',1)">&#43;</button>' +
+          '</div>' +
+          '<span class="cart-item-price">\u20b9' + (qty * price) + '</span>';
+        list.appendChild(row);
+      });
+    }
+    buildWpLink(keys, totalAmt);
+  }
+
+  function drawerQty(name, delta) {
+    if (!cart[name]) return;
+    cart[name].qty += delta;
+    if (cart[name].qty <= 0) {
+      delete cart[name];
+      document.querySelectorAll('.card-body').forEach(function(cb) {
+        var h4 = cb.querySelector('h4');
+        if (h4 && h4.innerText.trim() === name) {
+          var atcBtn = cb.querySelector('.add-to-cart-btn');
+          if (atcBtn) {
+            atcBtn.querySelector('.atc-controls').classList.remove('visible');
+            atcBtn.querySelector('.atc-add').style.display = '';
+          }
+        }
+      });
+    } else {
+      document.querySelectorAll('.card-body').forEach(function(cb) {
+        var h4 = cb.querySelector('h4');
+        if (h4 && h4.innerText.trim() === name) {
+          var countEl = cb.querySelector('.atc-count');
+          if (countEl) countEl.textContent = cart[name].qty;
+        }
+      });
+    }
+    updateCart();
+  }
+
+  function buildWpLink(keys, totalAmt) {
+    var btn = document.getElementById('cartWpBtn');
+    if (keys.length === 0) { btn.href = '#'; return; }
+    var msg = '%F0%9F%8D%97 *FFC Order* %F0%9F%8D%97%0A%0A';
+    keys.forEach(function(name) {
+      var qty   = cart[name].qty;
+      var price = cart[name].price;
+      msg += qty + 'x ' + name + ' %E2%80%94 %E2%82%B9' + (qty * price) + '%0A';
+    });
+    msg += '%0A*Total%3A %E2%82%B9' + totalAmt + '*%0A%0APlease confirm my order! %F0%9F%99%8F';
+    btn.href = 'https://wa.me/918130706760?text=' + msg;
+  }
+
+  function openCart() {
+    document.getElementById('cartDrawer').classList.add('open');
+    document.getElementById('cartBackdrop').classList.add('visible');
+  }
+  function closeCart() {
+    document.getElementById('cartDrawer').classList.remove('open');
+    document.getElementById('cartBackdrop').classList.remove('visible');
+  }
+
+
+  // SEARCH
+  function searchMenu(input) {
+    const q = input.value.trim().toLowerCase();
+    const cards = document.querySelectorAll('.menu-card');
+    const noResults = document.getElementById('noResults');
+
+    // sync both clear buttons
+    var clr1 = document.getElementById('searchClear');
+    var clr2 = document.getElementById('navSearchClear');
+    // sync both inputs
+    var inp1 = document.getElementById('menuSearch');
+    var inp2 = document.getElementById('navSearchInput');
+    if (clr1) { if (q) clr1.classList.add('visible'); else clr1.classList.remove('visible'); }
+    if (clr2) { if (q) clr2.classList.add('visible'); else clr2.classList.remove('visible'); }
+    if (inp1 && input !== inp1) inp1.value = input.value;
+    if (inp2 && input !== inp2) inp2.value = input.value;
+
+    // Reset category buttons
+    if (q) {
+      document.querySelectorAll('.cat-btn').forEach(function(b){ b.classList.remove('active'); });
+    }
+
+    var visible = 0;
+    cards.forEach(function(card) {
+      var name = card.querySelector('h4') ? card.querySelector('h4').innerText.toLowerCase() : '';
+      var desc = card.querySelector('p')  ? card.querySelector('p').innerText.toLowerCase()  : '';
+      var match = !q || name.includes(q) || desc.includes(q);
+      card.style.display = match ? 'flex' : 'none';
+      if (match) visible++;
+    });
+
+    noResults.style.display = (q && visible === 0) ? 'block' : 'none';
+  }
+
+  function clearSearch() {
+    var input = document.getElementById('menuSearch');
+    input.value = '';
+    searchMenu(input);
+    input.focus();
+    // Restore all items (reapply current filter)
+    filterMenu('all');
+  }
+
+
+  function toggleNavSearch() {
+    var bar = document.getElementById('navSearchBar');
+    var input = document.getElementById('navSearchInput');
+    bar.classList.toggle('open');
+    if (bar.classList.contains('open')) {
+      setTimeout(function(){ input.focus(); }, 320);
+    } else {
+      clearNavSearch();
+    }
+  }
+
+  function clearNavSearch() {
+    var input = document.getElementById('navSearchInput');
+    if (input) {
+      input.value = '';
+      searchMenu(input);
+    }
+    var clr = document.getElementById('navSearchClear');
+    if (clr) clr.classList.remove('visible');
+  }
+
+
+  // ===== REVIEW FORM =====
+  var selectedStars = 0;
+
+  // Star picker
+  document.querySelectorAll('#starPicker span').forEach(function(star) {
+    star.addEventListener('click', function() {
+      selectedStars = parseInt(this.dataset.val);
+      document.querySelectorAll('#starPicker span').forEach(function(s, i) {
+        s.classList.toggle('active', i < selectedStars);
+      });
+    });
+    star.addEventListener('mouseover', function() {
+      var val = parseInt(this.dataset.val);
+      document.querySelectorAll('#starPicker span').forEach(function(s, i) {
+        s.classList.toggle('active', i < val);
+      });
+    });
+    star.addEventListener('mouseleave', function() {
+      document.querySelectorAll('#starPicker span').forEach(function(s, i) {
+        s.classList.toggle('active', i < selectedStars);
+      });
+    });
+  });
+
+  // Char counter
+  var rfReview = document.getElementById('rf-review');
+  if (rfReview) {
+    rfReview.addEventListener('input', function() {
+      document.getElementById('rf-charcount').textContent = this.value.length + ' / 300';
+    });
+  }
+
+  // Platform logo map
+  var platformLogos = {
+    'Google': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png',
+    'Zomato': 'https://b.zmtcdn.com/web_assets/b40b97e677bc7b2ca77c58c61db266fe1603954218.png',
+    'Swiggy': 'https://upload.wikimedia.org/wikipedia/en/1/12/Swiggy_logo.svg',
+    'Visit':  ''
+  };
+
+  var avatarColors = ['#CC0000','#e23744','#fc8019','#6a1fc2','#007a4d','#cc6600','#1a1a6e','#990000'];
+
+  function submitReview() {
+    var name     = document.getElementById('rf-name').value.trim();
+    var platform = document.getElementById('rf-platform').value;
+    var item     = document.getElementById('rf-item').value.trim();
+    var reviewTxt= document.getElementById('rf-review').value.trim();
+
+    if (!name)       { alert('Please enter your name!'); return; }
+    if (!selectedStars) { alert('Please select a star rating!'); return; }
+    if (reviewTxt.length < 10) { alert('Please write at least 10 characters!'); return; }
+
+    // Build star string
+    var stars = '';
+    for (var i = 0; i < selectedStars; i++) stars += '★';
+    for (var i = selectedStars; i < 5; i++) stars += '☆';
+
+    // Avatar initials
+    var parts = name.split(' ');
+    var initials = parts[0][0].toUpperCase() + (parts[1] ? parts[1][0].toUpperCase() : '');
+    var avatarColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
+
+    // Logo
+    var logoHtml = platformLogos[platform]
+      ? '<img src="' + platformLogos[platform] + '" alt="' + platform + '">'
+      : '<span style="font-size:1.1rem;">🏪</span>';
+
+    // Build card HTML
+    var cardHtml =
+      '<div class="review-card" style="animation:fadeUp 0.5s ease both;">' +
+        '<div class="review-top">' +
+          '<div class="reviewer-info">' +
+            '<div class="reviewer-avatar" style="background:' + avatarColor + ';">' + initials + '</div>' +
+            '<div>' +
+              '<div class="reviewer-name">' + name + '</div>' +
+              '<div class="reviewer-date">Just now · ' + platform + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="review-platform">' + logoHtml + '</div>' +
+        '</div>' +
+        '<div class="review-stars">' + stars + '</div>' +
+        '<div class="review-text">"' + reviewTxt + '"</div>' +
+        (item ? '<span class="review-item-tag">🍽️ ' + item + '</span>' : '') +
+      '</div>';
+
+    // Duplicate card for seamless scroll loop — insert at start and middle
+    var track = document.getElementById('reviewsTrack');
+    var cards = track.querySelectorAll('.review-card');
+    var half = Math.floor(cards.length / 2);
+
+    // Insert before first card
+    track.insertAdjacentHTML('afterbegin', cardHtml);
+    // Insert at middle too (for seamless loop duplicate)
+    var midCard = track.querySelectorAll('.review-card')[half + 1];
+    if (midCard) {
+      track.insertBefore(track.querySelector('.review-card').cloneNode(true), midCard);
+    }
+
+    // Show success
+    document.getElementById('reviewFormContent').style.display = 'none';
+    document.getElementById('reviewSuccess').style.display = 'block';
+  }
+
+  function resetReviewForm() {
+    document.getElementById('rf-name').value = '';
+    document.getElementById('rf-item').value = '';
+    document.getElementById('rf-review').value = '';
+    document.getElementById('rf-charcount').textContent = '0 / 300';
+    selectedStars = 0;
+    document.querySelectorAll('#starPicker span').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById('reviewFormContent').style.display = 'block';
+    document.getElementById('reviewSuccess').style.display = 'none';
+  }
+
+</script>
+
+
+<!-- CART BACKDROP -->
+<div class="cart-backdrop" id="cartBackdrop" onclick="closeCart()"></div>
+
+<!-- CART FAB -->
+<button class="cart-fab" id="cartFab" onclick="openCart()">
+  🛒
+  <span class="cart-count-badge" id="cartBadge">0</span>
+</button>
+
+<!-- CART DRAWER -->
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-drawer-handle"></div>
+  <div class="cart-drawer-header">
+    <h3>🛒 Your Order</h3>
+    <button class="cart-close-btn" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items-list" id="cartItemsList">
+    <div class="cart-empty-msg" id="cartEmptyMsg">Your cart is empty 🍽️</div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total-amount" id="cartTotal">₹0</span>
+    </div>
+    <a id="cartWpBtn" href="#" class="cart-wp-btn" target="_blank">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="22" height="22">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Send Order on WhatsApp
+    </a>
+  </div>
+</div>
+
+<!-- WHATSAPP FLOATING BUTTON -->
+<a href="https://wa.me/918130706760?text=Hi%20FFC!%20I%20want%20to%20order%20food." class="wa-btn" target="_blank" title="Order on WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="30" height="30">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+</body>
+</html>
